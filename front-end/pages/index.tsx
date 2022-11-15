@@ -1,16 +1,17 @@
-import Head from 'next/head'
+import WeatherChart from '../components/weather-chart'
+import Layout from '../components/layout'
+import { getWeatherData } from '../lib/forecast'
 
-export default function Home() {
+
+export default function Home({ weatherData }) {
   return (
-    <div>
-      <Head>
-        <title>Forecasts</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main>
-        <h1>Forecasts</h1>
-      </main>
-    </div>
+    <Layout>
+      <WeatherChart weatherData={weatherData} />
+    </Layout>
   )
+}
+
+export async function getServerSideProps() {
+  const weatherData = await getWeatherData('London, GB')
+  return { props: { weatherData } }
 }
