@@ -3,20 +3,20 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Navbar from 'react-bootstrap/Navbar';
-import WeatherChart from '../components/weather-chart'
+import { Forecast } from '../components/weather-chart'
 import { getWeatherData } from '../lib/forecast'
 import { useState } from 'react'
 
 export default function Layout({ children }) {
 
-    const [chart, setChart] = useState({
+    const [forecast, setForecast] = useState({
         display: false,
         data: '',
     });
 
     const handleSubmit = async (event) => {
         event.preventDefault()
-        setChart({ display: true, data: await getWeatherData(event.target.name.value)})
+        setForecast({ display: true, data: await getWeatherData(event.target.name.value)})
     }
 
     return (
@@ -45,7 +45,7 @@ export default function Layout({ children }) {
             </Navbar>
             <Container>
                 <main>
-                    { chart.display === true ? <WeatherChart weatherData={chart.data} hours={12} /> : null }
+                    { forecast.display === true ? <Forecast weatherData={forecast.data} /> : null }
                     { children }
                 </main>
             </Container>
