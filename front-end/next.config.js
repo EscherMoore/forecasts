@@ -1,20 +1,16 @@
-/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: {
+      remotePatterns: [
+        {
+          protocol: 'https',
+          hostname: '**.googleusercontent.com',
+          port: '',
+          pathname: '/a/**',
+        },
+      ],
+  },
+  reactStrictMode: true,
+  swcMinify: true,
+}
 
-module.exports = () => {
-  const rewrites = () => {
-    return [
-      {
-        source: "/forecast",
-        destination: "http://localhost:8000/forecast",
-        has: [
-          { type: 'query', key: 'location' },
-        ],
-      },
-    ];
-  };
-  return {
-    rewrites,
-    reactStrictMode: true,
-    swcMinify: true,
-  };
-};
+module.exports = nextConfig

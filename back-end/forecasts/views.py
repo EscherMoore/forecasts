@@ -5,6 +5,12 @@ from rest_framework.response import Response
 from config.settings import API_KEY
 import requests
 import json
+from .serializers import ForecastSerializer
+from django.http import HttpResponse, JsonResponse
+from django.contrib.auth import get_user_model
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from dj_rest_auth.registration.views import SocialLoginView
 
 
 @api_view(['GET'])
@@ -52,3 +58,27 @@ def forecast(request):
     weatherData['city'] = city 
     weatherData['country'] = country 
     return Response(weatherData)
+
+
+
+class GoogleLogin(SocialLoginView): # if you want to use Authorization Code Grant, use this
+    adapter_class = GoogleOAuth2Adapter
+    callback_url = 'http://localhost:3000'
+    client_class = OAuth2Client
+
+
+@api_view(['GET'])
+def user_saves(request):
+    if request.method == 'GET':
+        User = get_user_model()
+        Token = request.auth
+
+        user = User.objects.get(auth_token=Token)
+        user_forecasts = user.forecasts.all()
+        if len(user_forecasts) == 0:
+            return JsonResponse({})
+
+        forecasts_serializer = ForecastSerializer(user_forecasts, many=True)
+        forecasts_json = JSONRenderer().render(forecasts_serializer.data)
+        return HttpResponse(forecasts_json)
+    return HttpResponse(status=204)

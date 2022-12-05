@@ -1,12 +1,113 @@
+@font-face {
+    font-family: "Unica One";
+    src: url('../fonts/UnicaOne-Regular.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+html * {
+    font-family: 'Unica One', cursive;
+}
+
+body {
+    background-color: #212529 !important;
+}
+
+.btn {
+    background-color: #2B908F !important;
+    color: white;
+    border: none !important;
+    outline: none !important;
+}
+
+.active.btn-dark {
+    background-color: #2B908F !important;
+    color: white;
+}
+
+.btn-dark {
+    color: white !important;
+}
+
+a {
+    color: inherit;
+    text-decoration: none !important;
+}
+
+.navbar-nav a {
+    color: lightgrey;
+}
+
+.nav-item {
+    padding: 1.5px;
+}
+
 .chart {
-    margin-top: 25px;
-    margin-bottom: 25px;
+    margin-top: 35px;
+    margin-bottom: 35px;
 }
 
 .chart-tab {
     margin-bottom: 3.5px;
 }
 
-.nav-item {
-    padding: 1.5px;
+input {
+    outline: none !important;
+    border: none !important;
+    outline-color: none;
+    box-shadow: none;
+}
+
+input:focus {
+    outline: none !important;
+    border: none !important;
+    outline-color: none;
+    box-shadow: none;
+}
+
+input {
+    background-color: lightgray !important;
+}
+
+.username {
+    color: white;
+}
+
+.nav-active {
+    color: #2B908F !important;
+}
+
+.nav-inactive:hover {
+    color: white !important
+}
+
+.nav-inactive {
+    color: lightgray !important;
+}
+
+nav {
+    background-color: #212121
+}
+
+main {
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+img {
+    border-radius: 50%;
+}
+
+.profile-info {
+    padding: 15px;
+}
+
+.profile-username {
+    color: white;
+}
+
+.no-save-data {
+    color: white;
+    text-align: center;
+    margin: 50px;
 }
