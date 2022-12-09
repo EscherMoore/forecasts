@@ -22,7 +22,7 @@ export default function WeatherChart({ weatherData, hours=12 }) {
         },
         legend: { enabled: false },
         title: {
-            text: weatherData.city + ', ' + weatherData.country
+            text: weatherData.formatted_address
         },
         subtitle: {
             text: 'Source: openweathermap.org'
@@ -54,7 +54,7 @@ export default function WeatherChart({ weatherData, hours=12 }) {
             enabled: false
         },
         series: [{
-            name: weatherData.city,
+            name: weatherData.formatted_address,
             data: hourlyTemperature(weatherData.hourly, hours),
         }]
     }

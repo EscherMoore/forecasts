@@ -1,4 +1,4 @@
-export function getWeatherData(location) { 
+export function getForecast(location) {
   return new Promise((resolve, reject) => {
     fetch('http://localhost:8000' + '/forecast?location=' + location)
     .then(response => response.json())

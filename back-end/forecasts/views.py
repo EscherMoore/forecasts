@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view, authentication_classes, permission_classes, renderer_classes
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
-from config.settings import API_KEY
+from config.settings import OPEN_WEATHER_MAP_API_KEY, GOOGLE_GEOCODING_API_KEY
 import requests
 import json
 from .serializers import ForecastSerializer
@@ -11,6 +11,8 @@ from django.contrib.auth import get_user_model
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
+from rest_framework import viewsets
+from .models import Forecast
 
 
 @api_view(['GET'])
@@ -21,43 +23,27 @@ def forecast(request):
 
     location = request.GET.get('location')
 
-    # If all values are numbers then it is a zip code
-    zip = all(ch.isdigit() for ch in location)
+    geocoding_url = 'https://maps.googleapis.com/maps/api/geocode/json'
+    params = {'address': location, 'key': GOOGLE_GEOCODING_API_KEY}
 
-    if not zip:
-        cityURL = f'http://api.openweathermap.org/geo/1.0/direct'
-        params = {'q': location, 'limit': 1, 'appid': API_KEY}
-        cityData = requests.get(cityURL, params)
-        if cityData.status_code != 200:
-            return Response(cityData.json())
+    response = requests.get(geocoding_url, params)
+    google_geocoding_data = response.json()
 
-        cityData = cityData.json()[0]
-        lat = cityData['lat']
-        lon = cityData['lon']
-        city = cityData['name']
-        country = cityData['country']
+    # Only save the first result in the dataset
+    google_geocoding_data = google_geocoding_data['results'][0]
 
-    else:
-        zipURL = f'http://api.openweathermap.org/geo/1.0/zip'
-        params = {'zip': location, 'mode': 'json', 'appid': API_KEY}
-        zipData = requests.get(zipURL, params)
-        if zipData.status_code != 200:
-            return Response(zipData.json())
-
-        zipData = zipData.json()
-        lat = zipData['lat']
-        lon = zipData['lon']
-        city = zipData['name']
-        country = zipData['country']
+    formatted_address = google_geocoding_data['formatted_address']
+    lat = google_geocoding_data['geometry']['location']['lat']
+    lon = google_geocoding_data['geometry']['location']['lng']
 
     onecall_api_endpoint = f'https://api.openweathermap.org/data/2.5/onecall'
-    onecall_api_params = {'lat': lat, 'lon': lon, 'units': 'imperial', 'appid': API_KEY}
-    weatherData = requests.get(onecall_api_endpoint, onecall_api_params)
+    onecall_api_params = {'lat': lat, 'lon': lon, 'units': 'imperial', 'appid': OPEN_WEATHER_MAP_API_KEY}
+    weather_data = requests.get(onecall_api_endpoint, onecall_api_params)
 
-    weatherData = weatherData.json()
-    weatherData['city'] = city 
-    weatherData['country'] = country 
-    return Response(weatherData)
+    weather_data = weather_data.json()
+    weather_data['formatted_address'] = formatted_address
+
+    return Response(weather_data)
 
 
 
@@ -67,18 +53,21 @@ class GoogleLogin(SocialLoginView): # if you want to use Authorization Code Gran
     client_class = OAuth2Client
 
 
-@api_view(['GET'])
-def user_saves(request):
-    if request.method == 'GET':
-        User = get_user_model()
-        Token = request.auth
 
+class ForecastViewSet(viewsets.ModelViewSet):
+    serializer_class = ForecastSerializer
+
+    def get_queryset(self):
+        User = get_user_model()
+        Token = self.request.auth
         user = User.objects.get(auth_token=Token)
         user_forecasts = user.forecasts.all()
-        if len(user_forecasts) == 0:
-            return JsonResponse({})
+        
+        return user_forecasts.order_by('-date_added')
 
-        forecasts_serializer = ForecastSerializer(user_forecasts, many=True)
-        forecasts_json = JSONRenderer().render(forecasts_serializer.data)
-        return HttpResponse(forecasts_json)
-    return HttpResponse(status=204)
+
+    def perform_create(self, serializer):
+        User = get_user_model()
+        Token = self.request.auth
+        user = User.objects.get(auth_token=Token)
+        serializer.save(user=user)

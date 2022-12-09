@@ -2,11 +2,12 @@ import Head from 'next/head'
 import Link from 'next/link';
 import { Button, Container, Form, Navbar, Nav } from 'react-bootstrap/'
 import { Forecast } from '../components/weather-chart'
-import { getWeatherData } from '../lib/forecast'
+import { getForecast } from '../lib/forecast'
 import { useState } from 'react'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router';
 import Image from 'next/image'
+import {saveForecast} from '../lib/user'
 
 export default function Layout({ children }) {
 
@@ -19,10 +20,21 @@ export default function Layout({ children }) {
         data: '',
     });
 
-    const handleSubmit = async (event) => {
+    const handleSearch = async (event) => {
         event.preventDefault()
-        setForecast({ display: true, data: await getWeatherData(event.target.name.value)})
+        setForecast({ display: true, data: await getForecast(event.target.name.value)})
         event.target.name.value = ""
+    }
+
+    const handleClear = (event) => {
+        event.preventDefault()
+        setForecast({ display: false, data: []})
+    }
+
+    const handleSave = async (event) => {
+        event.preventDefault()
+        await saveForecast(session['accessToken'], forecast.data)
+        setForecast({ display: false, data: []})
     }
 
     return (
@@ -91,7 +103,7 @@ export default function Layout({ children }) {
             <Container>
                 <main>
                     <Form 
-                        onSubmit={handleSubmit}
+                        onSubmit={handleSearch}
                         className="d-flex g-3"
                     >
                         <Form.Control
@@ -106,7 +118,17 @@ export default function Layout({ children }) {
                         />
                         <Button className="btn btn-primary" type="submit">Search</Button>
                     </Form>
-                    { forecast.display === true ? <Forecast weatherData={forecast.data} /> : null }
+                    { forecast.display === true ?
+                        <>
+                            <Forecast weatherData={forecast.data} />
+                            <div className="mt-1">
+                                <Button onClick={handleClear} className="btn btn-primary" type="submit">Clear</Button>
+                                <Button onClick={handleSave} className="mx-1 btn btn-primary" type="submit">Save</Button>
+                            </div>
+                        </>
+                    :
+                        null
+                    }
                     { children }
                 </main>
             </Container>

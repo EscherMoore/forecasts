@@ -13,7 +13,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 from decouple import config
 
-API_KEY = config('OPEN_WEATHER_MAP_API_KEY')
+OPEN_WEATHER_MAP_API_KEY = config('OPEN_WEATHER_MAP_API_KEY')
+GOOGLE_GEOCODING_API_KEY = config('GOOGLE_GEOCODING_API_KEY')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

@@ -1,6 +1,6 @@
 import {Forecast} from '../components/weather-chart'
 import Layout from '../components/layout'
-import { getWeatherData } from '../lib/forecast'
+import { getForecast } from '../lib/forecast'
 
 
 export default function Home({ weatherData }) {
@@ -13,12 +13,9 @@ export default function Home({ weatherData }) {
 
 export async function getServerSideProps() {
   var weatherData = {
-    NewYork: await getWeatherData('10005'),
-
-    /*
-    Tokyo: await getWeatherData('Tokyo, JP'),
-    London: await getWeatherData('London, GB')
-    */
+    NewYork: await getForecast('Manhattan, New York, NY, USA'),
+    Tokyo: await getForecast('Tokyo, Japan'),
+    London: await getForecast('London, UK')
   }
 
   return { props: { weatherData } }

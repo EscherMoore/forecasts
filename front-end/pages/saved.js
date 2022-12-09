@@ -1,6 +1,6 @@
 import Layout from '../components/layout'
 import { Forecast } from '../components/weather-chart'
-import { getWeatherData } from '../lib/forecast'
+import { getForecast } from '../lib/forecast'
 import { getUserSaveData } from '../lib/user'
 import { unstable_getServerSession } from "next-auth/next"
 import { authOptions } from "./api/auth/[...nextauth]"
@@ -14,7 +14,7 @@ export default function Saved({ savedWeatherData }) {
                 <h5 className="no-save-data">You don't have any saves...</h5>
             :
                 savedWeatherData.map((weatherData) => { 
-                    return <Forecast key={weatherData['city'] + ', ' + weatherData['country']} weatherData={weatherData} />
+                    return <Forecast key={weatherData['formatted_address']} weatherData={weatherData} />
                 })
             }
         </Layout>
@@ -38,12 +38,12 @@ export async function getServerSideProps(context) {
     
     const userSaveData = await getUserSaveData(session.accessToken)
 
-    if (Object.keys(userSaveData).length === 0 ) {
-        return { props: { session, savedWeatherData: [] } }
+    if (userSaveData.length === 0) {
+        return { props: { session, savedWeatherData: userSaveData }}
     }
 
     const savedWeatherData = await Promise.all(userSaveData.map(async (saves) => {
-        return await getWeatherData(saves['name'])
+        return await getForecast(saves['formatted_address'])
     }))
 
     return { props: { session, savedWeatherData } }

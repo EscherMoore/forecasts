@@ -11,11 +11,37 @@ export function getUserSaveData(accessToken) {
     })
     .then(response => response.json())
     .then(data => {
-      if (data.cod === '404' || data.length === 0) {
-        reject(data)
-      } else {
+      if (data) {
         resolve(data)
+      } else {
+        reject(data)
       }
     })
   })
+}
+
+
+export async function saveForecast(accessToken, forecastData) {
+  const token = 'Token ' + accessToken.toString()
+
+  return new Promise((resolve, reject) => {
+    fetch('http://localhost:8000' + '/saves/', {
+      method: 'POST',
+      headers: {
+        'Authorization': token,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        formatted_address: forecastData['formatted_address']
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data) {
+        resolve(data)
+      } else {
+        reject(data)
+      }
+    })
+  });
 }
