@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework.decorators import api_view, authentication_classes, permission_classes, renderer_classes
+from rest_framework.decorators import api_view, authentication_classes, permission_classes, renderer_classes, action
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from config.settings import OPEN_WEATHER_MAP_API_KEY, GOOGLE_GEOCODING_API_KEY
@@ -13,6 +13,8 @@ from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
 from rest_framework import viewsets
 from .models import Forecast
+from django.shortcuts import get_object_or_404
+from rest_framework import status
 
 
 @api_view(['GET'])
@@ -71,3 +73,25 @@ class ForecastViewSet(viewsets.ModelViewSet):
         Token = self.request.auth
         user = User.objects.get(auth_token=Token)
         serializer.save(user=user)
+
+
+    def retrieve(self, request, pk=None):
+        User = get_user_model()
+        Token = self.request.auth
+        user = User.objects.get(auth_token=Token)
+        queryset = user.forecasts.all()
+
+        forecast = get_object_or_404(queryset, pk=pk)
+        serializer = ForecastSerializer(forecast)
+        return Response(serializer.data)
+
+
+    def destroy(self, request, pk=None):
+        User = get_user_model()
+        Token = self.request.auth
+        user = User.objects.get(auth_token=Token)
+        queryset = user.forecasts.all()
+
+        forecast = get_object_or_404(queryset, pk=pk)
+        forecast.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

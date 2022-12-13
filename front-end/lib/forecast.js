@@ -3,7 +3,7 @@ export function getForecast(location) {
     fetch('http://localhost:8000' + '/forecast?location=' + location)
     .then(response => response.json())
     .then(data => {
-      if (data.cod === '404' || data.length === 0) {
+      if (data.cod === '404') {
         reject(data)
       } else {
         resolve(data)

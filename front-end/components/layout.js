@@ -3,17 +3,19 @@ import Link from 'next/link';
 import { Button, Container, Form, Navbar, Nav } from 'react-bootstrap/'
 import { Forecast } from '../components/weather-chart'
 import { getForecast } from '../lib/forecast'
-import { useState } from 'react'
+import { useState, useContext } from "react";
 import { signIn, signOut, useSession } from 'next-auth/react'
-import { useRouter } from 'next/router';
+import { useRouter, withRouter } from 'next/router';
 import Image from 'next/image'
-import {saveForecast} from '../lib/user'
+import { saveForecast } from '../lib/user'
+import { UserContext } from '../pages/_app';
 
-export default function Layout({ children }) {
-
+function Layout({ children }) {
     const { data: session, status } = useSession();
     const router = useRouter();
     const currentRoute = router.pathname;
+
+    const user = useContext(UserContext);
 
     const [forecast, setForecast] = useState({
         display: false,
@@ -22,19 +24,41 @@ export default function Layout({ children }) {
 
     const handleSearch = async (event) => {
         event.preventDefault()
-        setForecast({ display: true, data: await getForecast(event.target.name.value)})
+
+        const searchTerm = event.target.name.value
+        // Clear the search bar immediately to prepare for subsequent searches
         event.target.name.value = ""
+        setForecast({ display: true, data: await getForecast(searchTerm)})
     }
 
     const handleClear = (event) => {
         event.preventDefault()
+
+        // Disable button to prevent duplicate clears
+        event.target.disabled = true
         setForecast({ display: false, data: []})
     }
 
     const handleSave = async (event) => {
         event.preventDefault()
-        await saveForecast(session['accessToken'], forecast.data)
-        setForecast({ display: false, data: []})
+
+        // Disable button to prevent duplicate saves
+        event.target.disabled = true
+
+        // Save to the database
+        const savedForecast = await saveForecast(session['accessToken'], forecast.data['formatted_address'])
+
+        if (router.pathname === "/saved" && savedForecast) {
+            // Update saves manually via State
+            const newSaveWeatherData = await getForecast(savedForecast['formatted_address'])
+            newSaveWeatherData['id'] = savedForecast['id']
+            user.setSaveData((updatedSaveData) => ([newSaveWeatherData, ...user.saveData]));
+
+            setForecast({ display: false, data: []})
+        } else {
+            // Update saves via useEffect on page transition
+            router.push('/saved/');
+        }
     }
 
     return (
@@ -92,7 +116,7 @@ export default function Layout({ children }) {
                             </Link>
                             <Nav className="ml-auto">
                                 <Button 
-                                    className="btn btn-primary btn-sm" 
+                                    className="mt-3 mb-3 btn btn-primary btn-sm"
                                     onClick={() => signIn('google', { callbackUrl: 'http://localhost:3000/saved' })}
                                 >Sign in with Google</Button>
                             </Nav>
@@ -122,8 +146,14 @@ export default function Layout({ children }) {
                         <>
                             <Forecast weatherData={forecast.data} />
                             <div className="mt-1">
-                                <Button onClick={handleClear} className="btn btn-primary" type="submit">Clear</Button>
-                                <Button onClick={handleSave} className="mx-1 btn btn-primary" type="submit">Save</Button>
+                                { status === "authenticated" ?
+                                    <>
+                                        <Button onClick={handleSave} className="btn btn-primary" type="submit">Save</Button>
+                                        <Button onClick={handleClear} className="mx-1 btn btn-primary" type="submit">Clear</Button>
+                                    </>
+                                :
+                                    <Button onClick={handleClear} className="btn btn-primary" type="submit">Clear</Button>
+                                }
                             </div>
                         </>
                     :
@@ -135,3 +165,4 @@ export default function Layout({ children }) {
         </>
     );
 }
+export default withRouter(Layout);

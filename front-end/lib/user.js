@@ -21,7 +21,7 @@ export function getUserSaveData(accessToken) {
 }
 
 
-export async function saveForecast(accessToken, forecastData) {
+export async function saveForecast(accessToken, formattedAddress) {
   const token = 'Token ' + accessToken.toString()
 
   return new Promise((resolve, reject) => {
@@ -32,7 +32,7 @@ export async function saveForecast(accessToken, forecastData) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        formatted_address: forecastData['formatted_address']
+        formatted_address: formattedAddress
       })
     })
     .then(response => response.json())
@@ -43,5 +43,27 @@ export async function saveForecast(accessToken, forecastData) {
         reject(data)
       }
     })
+  });
+}
+
+
+export async function deleteForecast(accessToken, forecast_id) {
+  const token = 'Token ' + accessToken.toString()
+
+  return new Promise((resolve, reject) => {
+    fetch('http://localhost:8000' + '/saves/' +  forecast_id + '/', {
+      method: 'DELETE',
+      headers: {
+        'Authorization': token,
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(response => {
+      if (response) {
+        resolve(response)
+      } else {
+        reject(response)
+      }
+    });
   });
 }
