@@ -31,6 +31,9 @@ def forecast(request):
     response = requests.get(geocoding_url, params)
     google_geocoding_data = response.json()
 
+    if len(google_geocoding_data['results']) == 0:
+        return Response(google_geocoding_data['results'])
+
     # Only save the first result in the dataset
     google_geocoding_data = google_geocoding_data['results'][0]
 

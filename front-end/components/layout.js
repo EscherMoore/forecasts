@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link';
-import { Button, Container, Form, Navbar, Nav } from 'react-bootstrap/'
+import { Button, Container, Form, Navbar, Nav, InputGroup } from 'react-bootstrap/'
 import { Forecast } from '../components/weather-chart'
 import { getForecast } from '../lib/forecast'
 import { useState, useContext } from "react";
@@ -9,6 +9,9 @@ import { useRouter, withRouter } from 'next/router';
 import Image from 'next/image'
 import { saveForecast } from '../lib/user'
 import { UserContext } from '../pages/_app';
+import { Formik } from 'formik'
+import { object, string } from 'yup';
+
 
 function Layout({ children }) {
     const { data: session, status } = useSession();
@@ -22,14 +25,10 @@ function Layout({ children }) {
         data: '',
     });
 
-    const handleSearch = async (event) => {
-        event.preventDefault()
-
-        const searchTerm = event.target.name.value
-        // Clear the search bar immediately to prepare for subsequent searches
-        event.target.name.value = ""
-        setForecast({ display: true, data: await getForecast(searchTerm)})
-    }
+    const schema = object().shape({
+        searchterm: string()
+            .max(80, 'This Location Is Too Long... Try Something Shorter.')
+    });
 
     const handleClear = (event) => {
         event.preventDefault()
@@ -126,22 +125,49 @@ function Layout({ children }) {
             </Navbar>
             <Container>
                 <main>
-                    <Form 
-                        onSubmit={handleSearch}
-                        className="d-flex g-3"
+                    <Formik
+                        validationSchema={schema}
+                        initialValues={{ searchterm: "" }}
+                        onSubmit={async (values, { setErrors }) => {
+                            const searchedForecast = await getForecast(values.searchterm)
+                            values.searchterm = ""
+                            if (searchedForecast.length == 0) {
+                                setErrors({searchterm: 'That Location Does Not Exist.'})
+                            } else {
+                                setForecast({ display: true, data: searchedForecast})
+                            }
+                        }}
                     >
-                        <Form.Control
-                            name="name"
-                            type="search"
-                            placeholder="Enter a City (optional: State, Country code) Or Zip code"
-                            className="me-2 shadow-none"
-                            aria-label="Search"
-                            required
-                            spellCheck="off"
-                            autoComplete="off"
-                        />
-                        <Button className="btn btn-primary" type="submit">Search</Button>
-                    </Form>
+                    {({
+                        values,
+                        errors,
+                        handleBlur,
+                        handleSubmit,
+                        handleChange}) => (
+                        <Form
+                            onSubmit={handleSubmit}
+                        >
+                            <InputGroup>
+                                <Form.Control
+                                    name="searchterm"
+                                    type="search"
+                                    placeholder="Search for a City, State, Zip, Country, Address, or Even a Place of Business"
+                                    className="me-2 shadow-none rounded"
+                                    aria-label="Search"
+                                    value={values.searchterm}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    required
+                                    isInvalid={errors.searchterm}
+                                    spellCheck="off"
+                                    autoComplete="off"
+                                />
+                                <Button class="rounded btn btn-primary" type="submit">Search</Button>
+                                <Form.Control.Feedback type="invalid">{errors.searchterm}</Form.Control.Feedback>
+                            </InputGroup>
+                        </Form>
+                    )}
+                    </Formik>
                     { forecast.display === true ?
                         <>
                             <Forecast weatherData={forecast.data} />
