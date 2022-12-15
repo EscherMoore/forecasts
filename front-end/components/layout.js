@@ -11,6 +11,7 @@ import { saveForecast } from '../lib/user'
 import { UserContext } from '../pages/_app';
 import { Formik } from 'formik'
 import { object, string } from 'yup';
+import { motion } from "framer-motion"
 
 
 function Layout({ children }) {
@@ -169,7 +170,11 @@ function Layout({ children }) {
                     )}
                     </Formik>
                     { forecast.display === true ?
-                        <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 1.0 }}
+                        >
                             <Forecast weatherData={forecast.data} />
                             <div className="mt-1">
                                 { status === "authenticated" ?
@@ -181,7 +186,7 @@ function Layout({ children }) {
                                     <Button onClick={handleClear} className="btn btn-primary" type="submit">Clear</Button>
                                 }
                             </div>
-                        </>
+                        </motion.div>
                     :
                         null
                     }
