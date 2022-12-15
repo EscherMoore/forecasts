@@ -7,6 +7,8 @@ import { useContext } from 'react'
 import { useSession } from 'next-auth/react'
 import { Button } from 'react-bootstrap/'
 import { UserContext } from '../pages/_app'
+import { motion } from "framer-motion"
+
 
 export default function Saved() {
     const { data: session, status } = useSession();
@@ -36,12 +38,16 @@ export default function Saved() {
             <Layout>
                 {user.saveData.map((weatherData) => {
                     return (
-                        <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.70 }}
+                        >
                             <Forecast key={weatherData['id']} weatherData={weatherData} />
                             <div className="mt-1">
                                 <Button onClick={handleDelete} value={weatherData['id']} className="btn btn-primary" type="submit">Delete</Button>
                             </div>
-                        </>
+                        </motion.div>
                     )
                 })}
             </Layout>
