@@ -17,6 +17,7 @@
     "eslint": "8.27.0",
     "eslint-config-next": "13.0.3",
     "formik": "^2.2.9",
+    "framer-motion": "^7.9.1",
     "highcharts-react-official": "^3.1.0",
     "next": "13.0.3",
     "next-auth": "^4.16.4",
