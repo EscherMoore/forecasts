@@ -7,7 +7,7 @@ import { useContext } from 'react'
 import { useSession } from 'next-auth/react'
 import { Button } from 'react-bootstrap/'
 import { UserContext } from '../pages/_app'
-import { motion } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 
 
 export default function Saved() {
@@ -28,34 +28,73 @@ export default function Saved() {
         user.setSaveData(user.saveData.filter(function (save) {
             return save['id'] != event.target.value
         }));
-
-        // Re-enable the button to prevent unexpected behavior with other delete buttons
-        event.target.disabled = false
     }
 
-    if (user.saveData && user.saveData.length > 0) {
+    if (user.saveData) {
         return (
             <Layout>
-                {user.saveData.map((weatherData) => {
-                    return (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.70 }}
-                        >
-                            <Forecast key={weatherData['id']} weatherData={weatherData} />
-                            <div className="mt-1">
-                                <Button onClick={handleDelete} value={weatherData['id']} className="btn btn-primary" type="submit">Delete</Button>
-                            </div>
-                        </motion.div>
-                    )
-                })}
-            </Layout>
-        )
-    } else if (user.saveData && user.saveData.length === 0) {
-        return (
-            <Layout>
-                <h5 className="message">You don't have any save data...</h5>
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.7, ease: 'easeInOut' }}
+                >
+                    <AnimatePresence mode='popLayout'>
+                        {user.saveData.length > 0 ?
+                            <motion.div
+                                key="has-saves"
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.5, ease: 'easeInOut' }}
+                                exit={{ opacity: 0, scale: 0.5 }}
+                            >
+                                <AnimatePresence mode='popLayout'>
+                                    {user.saveData.map((weatherData, index) => {
+                                        return (
+                                            <motion.div
+                                                layout
+                                                key={weatherData['id']}
+                                                animate={{ opacity: 1}}
+                                                exit={{ opacity: 0, scale: 0.5 }}
+                                                transition={{
+                                                    layout: {
+                                                        type: "spring",
+                                                        bounce: 0.2,
+                                                        duration: index * 0.3 + 0.8,
+                                                    },
+                                                    opacity: {
+                                                        duration: 0.5
+                                                    },
+                                                }}
+                                            >
+                                                <Forecast
+                                                    key={weatherData['id']}
+                                                    weatherData={weatherData}
+                                                />
+                                                <div className="mt-1">
+                                                    <Button
+                                                        onClick={handleDelete}
+                                                        value={weatherData['id']}
+                                                        className="btn btn-primary"
+                                                        type="submit"
+                                                    >Delete</Button>
+                                                </div>
+                                            </motion.div>
+                                        )
+                                    })}
+                                </AnimatePresence>
+                            </motion.div>
+                        :
+                            <motion.div
+                                key="no-saves"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.7, ease: 'easeInOut' }}
+                                exit={{ opacity: 0 }}
+                            >
+                                <h5 className="message">You don't have any saved forecasts...</h5>
+                            </motion.div>
+                        }
+                    </AnimatePresence>
+                </motion.div>
             </Layout>
         )
     } else {
