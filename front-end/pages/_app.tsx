@@ -8,14 +8,23 @@ import { getUserSaveData } from '../lib/user'
 import { getForecast } from '../lib/forecast'
 
 
+export const SearchContext = createContext();
+
 export default function App({
   Component,
   pageProps: { session, ...pageProps },
 }: AppProps) {
 
+  const [forecast, setForecast] = useState({
+      display: false,
+      data: '',
+      errorMsg: '',
+  });
+
   return (
     <SSRProvider>
       <SessionProvider session={session}>
+        <SearchContext.Provider value={{forecast, setForecast}}>
         {Component.auth ? (
           <Auth>
             <Component {...pageProps} />
@@ -23,6 +32,7 @@ export default function App({
         ) : (
           <Component {...pageProps} />
         )}
+        </SearchContext.Provider>
       </SessionProvider>
     </SSRProvider>
   )

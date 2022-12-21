@@ -35,7 +35,13 @@ export async function saveForecast(accessToken, formattedAddress) {
         formatted_address: formattedAddress
       })
     })
-    .then(response => response.json())
+    .then(response => {
+      if (response.status == 201) {
+        return response.json()
+      } else {
+        resolve(response)
+      }
+    })
     .then(data => {
       if (data) {
         resolve(data)

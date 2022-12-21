@@ -51,6 +51,7 @@ export default function Saved() {
                                         return (
                                             <motion.div
                                                 layout
+                                                initial={{ opacity: 0 }}
                                                 key={weatherData['id']}
                                                 animate={{ opacity: 1}}
                                                 exit={{ opacity: 0, scale: 0.5 }}

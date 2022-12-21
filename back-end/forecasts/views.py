@@ -71,6 +71,22 @@ class ForecastViewSet(viewsets.ModelViewSet):
         return user_forecasts.order_by('-date_added')
 
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        User = get_user_model()
+        Token = self.request.auth
+        user = User.objects.get(auth_token=Token)
+
+        if len(user.forecasts.all()) < 5:
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response(serializer.data, status=status.HTTP_403_FORBIDDEN)
+
+
     def perform_create(self, serializer):
         User = get_user_model()
         Token = self.request.auth
