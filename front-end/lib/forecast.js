@@ -1,6 +1,8 @@
+import { backend_server } from "../config"
+
 export function getForecast(location) {
   return new Promise((resolve, reject) => {
-    fetch('http://localhost:8000' + '/forecast?location=' + location)
+    fetch(backend_server + '/forecast?location=' + location)
     .then(response => response.json())
     .then(data => {
       if (data.cod === '404') {

@@ -3,12 +3,12 @@ import Layout from '../components/layout'
 import { getForecast } from '../lib/forecast'
 import { useState, useEffect } from 'react'
 import { AnimatePresence, motion } from "framer-motion"
+import Head from 'next/head';
 
 export default function Home() {
 
   const [defaultData, setDefaultData] = useState(null)
 
-  useEffect(() => {
     const getDefaultData = async () => {
 
       const forecasts = {
@@ -19,11 +19,16 @@ export default function Home() {
       setDefaultData(forecasts)
       return forecasts
     }
-    return getDefaultData
+
+  useEffect(() => {
+    getDefaultData()
   }, [])
 
   return (
     <Layout>
+      <Head>
+        <title>Home - Forecasts</title>
+      </Head>
       <AnimatePresence mode='popLayout'>
         {defaultData ?
           <motion.div
@@ -35,6 +40,7 @@ export default function Home() {
             {Object.keys(defaultData).map((location, index) => {
               return (
                 <motion.div
+                    key={index}
                     layout
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0, scale: 0.5 }}

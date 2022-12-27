@@ -1,7 +1,7 @@
 import NextAuth from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import axios from 'axios'
-
+import { backend_server } from "../../../config"
 
 export const authOptions = {
     providers: [
@@ -20,7 +20,7 @@ export const authOptions = {
 
                 try {
                     const response = await axios.post(
-                        "http://localhost:8000/auth/google/",
+                        backend_server + "/auth/google/",
                         {
                             access_token: accessToken,
                             id_token: idToken

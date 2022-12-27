@@ -1,4 +1,3 @@
-import Head from 'next/head'
 import Link from 'next/link';
 import { Button, Container, Form, Navbar, Nav, InputGroup } from 'react-bootstrap/'
 import { Forecast } from '../components/weather-chart'
@@ -13,6 +12,7 @@ import { Formik } from 'formik'
 import { object, string } from 'yup';
 import { AnimatePresence, motion } from "framer-motion"
 import Alert from 'react-bootstrap/Alert';
+import { frontend_server } from '../config';
 
 
 function Layout({ children }) {
@@ -72,10 +72,6 @@ function Layout({ children }) {
 
     return (
         <>
-            <Head>
-                <title>Forecasts</title>
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
             <Navbar collapseOnSelect expand="lg">
                 <Container>        
                     {status === "authenticated" ? 
@@ -84,7 +80,7 @@ function Layout({ children }) {
                                 <Link href="/">
                                     <Navbar.Brand 
                                         className={currentRoute == "/" ? "nav-active" : "nav-inactive"}
-                                    >Forecasts</Navbar.Brand> 
+                                    >Home</Navbar.Brand>
                                 </Link>
                                 <Nav className="ml-auto">
                                     <Link href="/saved"
@@ -111,7 +107,7 @@ function Layout({ children }) {
                             <Nav className="ml-auto">
                                 <Button 
                                     className="btn btn-primary btn-sm" 
-                                    onClick={() => signOut({ callbackUrl: 'http://localhost:3000/'})}
+                                    onClick={() => signOut({ callbackUrl: frontend_server})}
                                 >Sign out</Button>
                             </Nav>
                             <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -121,12 +117,12 @@ function Layout({ children }) {
                             <Link href="/">
                                 <Navbar.Brand 
                                     className={currentRoute == "/" ? "nav-active" : "nav-inactive"}
-                                >Forecasts</Navbar.Brand> 
+                                >Home</Navbar.Brand>
                             </Link>
                             <Nav className="ml-auto">
                                 <Button 
                                     className="mt-3 mb-3 btn btn-primary btn-sm"
-                                    onClick={() => signIn('google', { callbackUrl: 'http://localhost:3000/saved' })}
+                                    onClick={() => signIn('google', { callbackUrl: frontend_server + '/saved' })}
                                 >Sign in with Google</Button>
                             </Nav>
                         </>

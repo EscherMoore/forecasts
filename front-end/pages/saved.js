@@ -8,6 +8,7 @@ import { useSession } from 'next-auth/react'
 import { Button } from 'react-bootstrap/'
 import { UserContext } from '../pages/_app'
 import { AnimatePresence, motion } from "framer-motion"
+import Head from 'next/head';
 
 
 export default function Saved() {
@@ -33,6 +34,9 @@ export default function Saved() {
     if (user.saveData) {
         return (
             <Layout>
+                <Head>
+                    <title>Saved - Forecasts</title>
+                </Head>
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -91,7 +95,7 @@ export default function Saved() {
                                 transition={{ duration: 0.7, ease: 'easeInOut' }}
                                 exit={{ opacity: 0 }}
                             >
-                                <h5 className="message">You don't have any saved forecasts...</h5>
+                                <h5 className="message">You don&#39;t have any saved forecasts...</h5>
                             </motion.div>
                         }
                     </AnimatePresence>

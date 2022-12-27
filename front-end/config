@@ -1,3 +1,7 @@
-const production_server_url = 'TODO'
+const frontend_production_server_url = 'https://forecasts.eschermoore.com'
+const backend_production_server_url = 'https://api.forecasts.eschermoore.com'
+
 const dev = process.env.NODE_ENV !== 'production';
-export const server = dev ? 'http://localhost:3000' : production_server_url;
+
+export const frontend_server = dev ? 'http://localhost:3000' : frontend_production_server_url;
+export const backend_server = dev ? 'http://localhost:8000' : backend_production_server_url;

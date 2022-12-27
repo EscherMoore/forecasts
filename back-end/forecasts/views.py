@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view, authentication_classes, permission_classes, renderer_classes, action
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
-from config.settings import OPEN_WEATHER_MAP_API_KEY, GOOGLE_GEOCODING_API_KEY
+from config.settings import OPEN_WEATHER_MAP_API_KEY, GOOGLE_GEOCODING_API_KEY, IS_HEROKU
 import requests
 import json
 from .serializers import ForecastSerializer
@@ -54,7 +54,7 @@ def forecast(request):
 
 class GoogleLogin(SocialLoginView): # if you want to use Authorization Code Grant, use this
     adapter_class = GoogleOAuth2Adapter
-    callback_url = 'http://localhost:3000'
+    callback_url = 'https://forecasts.eschermoore.com' if IS_HEROKU else 'http://localhost:3000'
     client_class = OAuth2Client
 
 
