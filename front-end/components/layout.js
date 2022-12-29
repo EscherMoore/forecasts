@@ -72,7 +72,7 @@ function Layout({ children }) {
 
     return (
         <>
-            <Navbar collapseOnSelect expand="lg">
+            <Navbar collapseOnSelect variant="dark" expand="lg">
                 <Container>        
                     {status === "authenticated" ? 
                         <>
