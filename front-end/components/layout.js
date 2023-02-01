@@ -113,19 +113,12 @@ function Layout({ children }) {
                             <Navbar.Toggle aria-controls="basic-navbar-nav" />
                         </>
                     :
-                        <>
-                            <Link href="/">
-                                <Navbar.Brand 
-                                    className={currentRoute == "/" ? "nav-active" : "nav-inactive"}
-                                >Home</Navbar.Brand>
-                            </Link>
-                            <Nav className="ml-auto">
-                                <Button 
-                                    className="mt-3 mb-3 btn btn-primary btn-sm"
-                                    onClick={() => signIn('google', { callbackUrl: frontend_server + '/saved' })}
-                                >Sign in with Google</Button>
-                            </Nav>
-                        </>
+                        <Nav className="ms-auto">
+                            <Button
+                                className="mt-3 mb-3 btn btn-primary btn-sm"
+                                onClick={() => signIn('google', { callbackUrl: frontend_server + '/saved' })}
+                            >Sign in with Google</Button>
+                        </Nav>
                     }
                 </Container>
             </Navbar>
