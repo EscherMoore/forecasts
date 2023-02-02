@@ -23,7 +23,6 @@
   </p>
 </div>
 
-
 <details>
   <summary>Table of Contents</summary>
   <ol>
@@ -41,10 +40,7 @@
   </ol>
 </details>
 
-
-<video preload="none" autoplay loop muted playsinline width="100%" height="100%">
-    <source src="forecasts.mp4" type="video/mp4">
-</video>
+![Demo][demo]
 
 ## About The Project
 Through the use of the [Google Maps Geocoding API](https://developers.google.com/maps/documentation/geocoding) and weather data pulled from [openweathermap.org](https://openweathermap.org/), users are able to search for nearly any place in the world and view a real time forecast for the searched location with the hourly temperature displayed using line charts. Creating an account is as simple as connecting your Google account to the app via the OAuth protocol. By signing in with Google, a user profile is saved to the app's PostgreSQL database using the Google resources granted to the app by the user (name, email address, language preference, and profile picture). With a newly created account, users gain the ability to save up to 5 locations of their choice for quick and easy forecast viewing in future visits.
@@ -122,3 +118,4 @@ See Github: [Licensing a repository](https://docs.github.com/en/repositories/man
 [Vercel-url]: https://vercel.com/
 [Heroku]: https://img.shields.io/badge/heroku-%23430098.svg?style=for-the-badge&logo=heroku&logoColor=white
 [Heroku-url]: https://www.heroku.com/
+[demo]: forecasts.webp
